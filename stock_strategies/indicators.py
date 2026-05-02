@@ -16,7 +16,8 @@ def add_indicators(df: pd.DataFrame) -> pd.DataFrame:
 
     low_min = df["low"].rolling(9).min()
     high_max = df["high"].rolling(9).max()
-    rsv = (df["close"] - low_min) / (high_max - low_min) * 100
+    denom = (high_max - low_min).replace(0, np.nan)
+    rsv = (df["close"] - low_min) / denom * 100
     df["k"] = rsv.ewm(com=2).mean()
     df["d"] = df["k"].ewm(com=2).mean()
 
