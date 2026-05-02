@@ -15,6 +15,7 @@ wheels/
 speech-to-text-*.json
 *-credentials.json
 *-service-account.json
+infinite-maxim-*.json
 
 # macOS
 .DS_Store
