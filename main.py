@@ -15,11 +15,14 @@ try:
 except ImportError:
     pass
 
-from stock_strategies.sheet import read_watchlist, append_signals
+import pytz
+
+from stock_strategies.sheet import read_watchlist, append_signals, already_ran_today
 from stock_strategies.evaluate import evaluate
 from stock_strategies.notify import send_telegram, format_messages
 from stock_strategies.config import CONFIG
 
+TW = pytz.timezone("Asia/Taipei")
 
 REQUIRED_ENV = [
     "FINMIND_TOKEN",
@@ -36,7 +39,21 @@ def main():
         print(f"缺少環境變數: {missing}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"[{datetime.now()}] 讀取 watchlist...")
+    now_tw = datetime.now(TW)
+    today = now_tw.strftime("%Y-%m-%d")
+    print(f"[台灣時間 {now_tw.strftime('%Y-%m-%d %H:%M')}] 啟動")
+
+    # 台灣時間 14:00 前不執行（確保收盤後才跑）
+    if now_tw.hour < 14:
+        print(f"  → 台灣時間 {now_tw.strftime('%H:%M')}，未到 14:00，跳過")
+        sys.exit(0)
+
+    # 今天已跑過就跳過（防止多個 cron 重複執行）
+    if already_ran_today(today):
+        print(f"  → {today} 已執行過，跳過")
+        sys.exit(0)
+
+    print(f"[{now_tw.strftime('%H:%M')}] 讀取 watchlist...")
     watchlist = read_watchlist()
     print(f"  → {len(watchlist)} 檔")
 

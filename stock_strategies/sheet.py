@@ -29,6 +29,17 @@ def read_watchlist() -> list[dict]:
     return enabled
 
 
+def already_ran_today(today: str) -> bool:
+    """檢查 Signals 工作表今天是否已有資料"""
+    try:
+        sh = get_gsheet()
+        ws = sh.worksheet("Signals")
+        col = ws.col_values(1)  # date 欄
+        return today in col
+    except Exception:
+        return False
+
+
 def append_signals(signals: list[dict]):
     """把結果寫回 Signals 分頁"""
     if not signals:

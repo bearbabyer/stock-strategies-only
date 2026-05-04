@@ -2,8 +2,12 @@ name: V3 Daily Signal
 
 on:
   schedule:
-    # 台灣時間 14:30 = UTC 06:30 (台股收盤後)
-    - cron: '30 6 * * 1-5'
+    # 每小時整點檢查，實際執行由 main.py 判斷時間
+    # UTC 06:00~09:00 = 台灣時間 14:00~17:00（補償 GitHub 排程延遲）
+    - cron: '0 6 * * 1-5'
+    - cron: '0 7 * * 1-5'
+    - cron: '0 8 * * 1-5'
+    - cron: '0 9 * * 1-5'
   workflow_dispatch:  # 允許手動觸發測試
 
 jobs:
